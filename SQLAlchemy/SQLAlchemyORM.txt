@@ -7,7 +7,7 @@ from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import Session, sessionmaker
 
 
-engine = create_engine("postgresql://postgres:02419224596E@localhost/pythondb")
+engine = create_engine("postgresql://postgres:password@localhost/pythondb")
 Base = declarative_base()
 
 class User(Base):
@@ -105,7 +105,7 @@ ELIMINAR REGISTROS
     session.commit()
 
 RELACIONES ENTRE OBJETOS
-engine = create_engine("postgresql://postgres:02419224596E@localhost/pythondb")
+engine = create_engine("postgresql://postgres:password@localhost/pythondb")
 Base = declarative_base()
 
 class User(Base):
