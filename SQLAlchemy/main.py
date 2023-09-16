@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy import ForeignKey
 
-engine = create_engine("postgresql://postgres:02419224596E@localhost/pythondb")
+engine = create_engine("postgresql://postgres:password@localhost/pythondb")
 Base = declarative_base()
 
 class User(Base):
