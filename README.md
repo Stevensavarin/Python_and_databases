@@ -8,5 +8,10 @@ In the folder "Peewee" there is a project and in addition I let a guide created 
 when i was solving different problems and there are different functionalities that can be added or changed in the project, 
 it does not have a specific order.
 it is only a guide that I created to keep track and notes of the project, it is important that you create your own guides and go solving different problems by yourself and thus gain experience, but I leave it as part of what I did.
+I also let the list of the packages installed in my env(environment) at the time I created the project.
 
 in the folder "Postgres" there is another project but using the postgres database.
+I also let the list of the packages installed in my env(environment) at the time I created the project.
+
+In the folder "SQLAlchemy" 
+I also let the list of the packages installed in my env(environment) at the time I created the project.
