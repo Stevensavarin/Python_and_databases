@@ -1,0 +1,285 @@
+import peewee
+from datetime import datetime
+
+
+database = peewee.MySQLDatabase("pythondb", 
+                                 host="localhost",
+                                 port=3306, 
+                                 user="root", 
+                                 passwd="02419224596E")
+
+# users
+
+class User(peewee.Model):
+    username = peewee.CharField(max_length=50, unique=True, index=True)
+    email = peewee.CharField(max_length=60, null=False)
+    active = peewee.BooleanField(default=False)
+    created_at = peewee.DateTimeField(default=datetime.now)
+
+    class Meta:
+        database = database
+        db_table = "users"
+
+    def __str__(self):
+        return self.username
+
+if __name__ == "__main__":
+
+    if User.table_exists():
+        User.drop_table()
+
+    User.create_table()
+
+    user1 = User(username="user1", email="user1@example.com", active=True)
+    user1.save()
+
+    user2 = User()
+    user2.username = "user2"
+    user2.email = "user2@example.com"
+    user2.save()
+
+    values ={
+        "username": "user3",
+        "email": "user3@example.com"
+    }
+
+    user3 = User(**values)
+    user3.save()
+
+    user4 = User.create(username="user4", email="user4@example.com")
+    print(user4.id)
+
+    query = User.insert(username="user5", email="user5@example.com")
+    print(type(query)) #ModeInsert
+    query.execute()
+
+
+CONDICIONAR CONSULTAS
+
+ #SELECT username, email, active FROM users WHERE active = 1 and id > 3;
+    users = User.select(User.username, 
+                        User.email, 
+                        User.active
+    ).where(
+        (User.active == True) & 
+        (
+            (User.id == 1 ) | (User.id == 7)
+        )
+    )
+    
+    for user in users:
+        print(user.username)
+
+ORDER BY 
+users = User.select().where(
+        User.active == True
+    ).order_by(User.username.desc()).limit(2)
+
+    print(users)
+
+    for user in users:
+        print(user)
+
+OBETENER REGISTROS UNICOS
+  get - first
+    try:
+        user = User.select().where(User.username == "user11").get()
+        print(type(user))
+        print(user)
+
+    except User.DoesNotExist as err:
+        print("No fue posible obtener al usuario!")
+
+    user = User.select().where(User.username == "user11").get()
+
+    if user:
+        print(user)
+    else:
+        print("No fue posible obtener al usuario!")
+
+VALIDAD EXISTENCIA DE REGISTROS
+    count = User.select().where(User.username == "user7").count()
+    if count > 0:
+        print("El usuario existe en la tabla.")
+    else:
+        print("No fue posible obtener al usuario")
+VALIDAR EXISTENCIA DE REGISTROS SEGUNDO METODO
+    exists = User.select().where(User.username == "user7").exists()
+    if exists:
+        print("El usuario existe en la tabla.")
+    else:
+        print("No fue posible obtener al usuario")
+
+ACTUALIZAR REGISTROS
+    user = User.select().where(User.id == 1).get()
+    print(user)
+
+    user.username = "Nuevo username"
+    user.email = "nuevo_email@example.com"
+
+    user.save()
+
+    # 2
+    query = User.update(username="User 2 nuevo valor", 
+    email="user_2nuevovalor@example.com").where(User.id == 2)
+    
+    query.execute()
+
+ELIMINAR REGISTROS
+    #1
+    user = User.select().where(User.username == "user7").get()
+    user.delete_instance()
+
+    # 2
+    query = User.delete().where(User.id == 6)
+    query.execute()
+
+RELACION UNO A MUCHOS
+class Author(peewee.Model):
+    name = peewee.CharField(max_length=50)
+
+    class Meta:
+        database = database
+        db_table = "authors"
+
+    def __str__(self):
+        return self.name
+        
+class Book(peewee.Model):
+    title = peewee.CharField(max_length=50)
+    author = peewee.ForeignKeyField(Author, backref="books")
+
+    class Meta:
+        database = database
+        db_table = "books"
+
+    def __str__(self):
+        return self.title
+
+
+if __name__ == "__main__":
+    
+    database.drop_tables([Author, Book])
+    database.create_tables([Author, Book])
+
+    author1 = Author.create(name="Sthephen King")
+
+    book1 = Book.create(title="It", author=author1)
+    book2 = Book.create(title="El resplandor", author=author1)
+    book3 = Book.create(title="Cujo", author=author1)
+
+    for book in author1.books:
+        print(book)
+
+RELACION UNO A UNO
+class User(peewee.Model):
+    username = peewee.CharField(max_length=50)
+    email = peewee.CharField(max_length=50)
+
+    class Meta:
+        database = database
+        db_table = "users"
+
+    def __str__(self):
+        return self.username
+    
+    @property
+    def admin(self):
+        return self.admins.first()
+
+class Admin(peewee.Model):
+    permission_level = peewee.IntegerField(default=1)
+    user = peewee.ForeignKeyField(User, backref="admins", unique=True)
+
+    class Meta:
+        database = database
+        db_table = "admins"
+
+    def __str__(self):
+        return "Admin " + str(self.id)
+
+if __name__ == "__main__":
+
+    database.drop_tables([User, Admin])
+    database.create_tables([User, Admin])
+
+    user1 = User.create(username="User1", email="user1@example.com")
+    admin1 = Admin.create(permission_level=10, user=user1)
+
+    #print(admin1.user.email)
+    print(user1.admin) #user1.admin
+
+
+RELACION DE MUCHOS A MUCHOS
+class Product(peewee.Model):
+    title = peewee.CharField(max_length=50)
+    price = peewee.DecimalField(max_digits=10, decimal_places=2)
+
+    class Meta:
+        database = database
+        db_table = "products"
+
+    def __str__(self):
+        return self.title
+    
+class Category(peewee.Model):
+    title = peewee.CharField(max_length=20)
+
+    class Meta:
+        database = database
+        db_table = "categories"
+
+    def __str__(self):
+        return self.title   
+
+class ProductCategory(peewee.Model):
+    product = peewee.ForeignKeyField(Product, backref="categories")
+    category = peewee.ForeignKeyField(Category, backref="products")
+
+    class Meta:
+        database = database
+        db_table = "product_categories"
+
+if __name__ == "__main__":
+    
+    database.drop_tables([Product, Category, ProductCategory])
+    database.create_tables([Product, Category, ProductCategory])
+
+    ipad = Product.create(title="Ipad", price=500.50)
+    iphone = Product.create(title="Iphone", price=800.50)
+    tv = Product.create(title="Tv", price=600.00)
+
+    technology = Category.create(title="Technology")
+    home = Category.create(title="Home")
+
+    ProductCategory.create(product=ipad, category=technology)
+    ProductCategory.create(product=iphone, category=technology)
+    ProductCategory.create(product=tv, category=technology)
+
+    ProductCategory.create(product=tv, category=home)
+
+    #for product_category in technology.products:
+     #   print(product_category.product)
+
+    for category_product in tv.categories:
+        print(category_product.category)
+
+PROBLEMA N+1 query
+    # N+1 Query
+    for product in Product.select(): # 1
+        
+        for product_category in product.categories: #
+
+            print(product, "-", product_category.category) #
+
+INNER JOIN
+    for product in Product.select(
+        Product.title, Category.title
+    ).join(
+        ProductCategory
+    ).join(Category, 
+        on=(
+            ProductCategory.category_id == Category.id
+        )
+    ):
+        print(product, "-", product.productcategory.category)
