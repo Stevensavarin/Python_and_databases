@@ -113,7 +113,7 @@ if __name__ == "__main__":
     }
 
     try:
-        connect = psycopg2.connect("postgresql://postgres:02419224596E@localhost/project_pythondb")
+        connect = psycopg2.connect("postgresql://postgres:password@localhost/project_pythondb")
 
         with connect.cursor() as cursor:
 
