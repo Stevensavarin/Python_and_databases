@@ -1,0 +1,76 @@
+
+El error que estás viendo (.\Scripts\activate.bat no se reconoce como nombre de un cmdlet, función, archivo de script o programa ejecutable) indica que PowerShell no está permitiendo la ejecución de scripts de PowerShell debido a la configuración de política de ejecución.
+
+Para solucionar esto, puedes habilitar la ejecución de scripts de PowerShell de la siguiente manera:
+
+Ejecuta PowerShell como administrador:
+
+Para cambiar la política de ejecución de scripts, necesitas abrir PowerShell como administrador. Para hacerlo, sigue estos pasos:
+
+Haz clic con el botón derecho en el icono de Windows en la barra de tareas.
+Selecciona "Windows PowerShell (Admin)" o "PowerShell (Admin)" en el menú que aparece.
+Cambiar la política de ejecución:
+
+Una vez que tengas PowerShell abierto como administrador, puedes cambiar la política de ejecución. Por ejemplo, puedes establecer la política en "Unrestricted", lo que permitirá la ejecución de scripts locales. Ejecuta el siguiente comando:
+
+powershell
+Copy code
+Set-ExecutionPolicy Unrestricted
+Te preguntará si deseas cambiar la política de ejecución. Confirma con "Sí" o "A" para continuar.
+
+Ejecuta nuevamente el comando de activación:
+
+Una vez que hayas cambiado la política de ejecución, intenta nuevamente ejecutar el comando de activación para tu entorno virtual:
+
+powershell
+Copy code
+.\Scripts\activate.bat
+Esto debería funcionar sin problemas ahora.
+
+Restaura la política de ejecución (opcional):
+
+Después de haber activado tu entorno virtual y trabajado en tu proyecto, puedes considerar restaurar la política de ejecución a un nivel más seguro para mantener la seguridad de tu sistema. Puedes hacerlo ejecutando:
+
+powershell
+Copy code
+Set-ExecutionPolicy Restricted
+Esto restringirá nuevamente la ejecución de scripts en PowerShell.
+
+Ten en cuenta que cambiar la política de ejecución de scripts puede tener implicaciones de seguridad, por lo que debes tener cuidado al hacerlo y restaurarla a un nivel seguro cuando hayas terminado de trabajar con tus scripts.
+
+crear entorno de desarrollo---
+python -m venv env
+env\Scripts\activate
+---
+pip install PyMySQL(ESTO ES PARA MYSQL)
+pip install psycopg2-binary(ESTO ES PARA POSTGRESQL) ABRIR SQL SHELL \l - \c nombrebasededatos - \dt - \! cls
+pip install python-dotenv python-decouple
+pip install mysql-connector-python
+pip install decouple
+pip install peewee
+pip install SQLAlchemy
+import pymysql
+import mysql.connector
+from dotenv import load_dotenv
+import os
+
+Desde Windows para activar el servidor puedes acceder en consola con el siguiente comando
+
+cd C:\Program Files\MySQL\MySQL Server 8.0\bin
+
+y desde ahí pones el siguiente comando
+
+mysql -u root -p "la contraseña que hayas puesto"
+
+en sql usar
+USE nombre_de_la_base_de_datos;
+SHOW TABLES;
+
+
+host=("localhost"), 
+            port=3306, 
+            user=os.getenv("USER_MYSQL"), 
+            passwd=os.getenv("PASSWORD_MYSQL"), 
+            db=os.getenv("DB_MYSQL")
+
+ scram-sha-256
