@@ -2,7 +2,7 @@
 In the folder "Python_databases" I let a txt file that I created when I was solving problems that I had and I made the annotations there, 
 I also let the list of the packages installed in my env(environment) at the time I created the project.
 packages installed in my environment at the time of creating the project. Of course it is good that you try to solve your own problems and make your own guide as you solve them.
-but still I leave it in case you have a problem similar to mine. the txt file is in Spanish because it is my native language but you can translate it. Certificate attached.
+but still I let it in case you have a problem similar to mine. the txt file is in Spanish because it is my native language but you can translate it. Certificate attached.
 
 In the folder "Peewee" there is a project and in addition I let a guide created by me
 when i was solving different problems and there are different functionalities that can be added or changed in the project, 
