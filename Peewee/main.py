@@ -6,7 +6,7 @@ database = peewee.MySQLDatabase("pythondb",
                                  host="localhost",
                                  port=3306, 
                                  user="root", 
-                                 passwd="02419224596E")
+                                 passwd="**********") #You can create a .env file an import it here to hide your password, etc...
 
 class Product(peewee.Model):
     title = peewee.CharField(max_length=50)
