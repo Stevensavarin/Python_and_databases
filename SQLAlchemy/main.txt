@@ -1,0 +1,195 @@
+INSERTAR MULTIPLES REGISTROS
+    metadata.drop_all(engine)
+    metadata.create_all(engine)
+
+    with engine.connect() as connection:
+        
+        insert_query = users.insert()
+
+        with open("users.json") as file:
+            users = json.load(file)
+
+            connection.execute(insert_query, users)
+
+            #for user in users:
+             #   query = insert_query.values(**user)
+              #  connection.execute(query)
+        
+        connection.commit()
+
+OBTENER REGISTROS
+    metadata.drop_all(engine)
+    metadata.create_all(engine)
+    
+    with engine.connect() as connection:
+      
+        with open("users.json") as file:
+            connection.execute(users.insert(), json.load(file))
+
+        select_query = users.select()
+
+        result = connection.execute(select_query)
+
+        for user in result.fetchall():
+            print(user.name)   
+        
+        connection.commit()
+
+OBTENER REGISTROS UNICOS #ASC
+        select_query = select(
+            users.c.name
+        ).where(
+            users.c.id == 1
+        )
+
+        result = connection.execute(select_query)
+        user = result.fetchone()
+
+        print(user)
+
+
+        connection.commit()
+
+#DESC 
+        select_query = select(
+            users.c.name
+        ).order_by(
+            desc(users.c.id)
+        ).limit(1)
+
+        result = connection.execute(select_query)
+        user = result.fetchone()
+
+        print(user)
+
+
+        connection.commit()
+
+ACTUALIZAR REGISTROS
+        
+        update_query = update(users).where(users.c.id == 1).values(
+            name="Cambio de nombre!", 
+            email="nuevo@email.com")
+        
+        update_query = update(users).where(users.c.id == 2).values(
+            name="Cambio de nombre2!", 
+            email="nuevo@email.com")
+        
+        result = connection.execute(update_query)
+        print(
+            result.rowcount
+        )
+
+        connection.commit()
+
+#2
+        update_query = update(users).values(
+            name="Nuevo cambio de nombre 2.0"
+        ).where(
+            users.c.id == 140
+        )
+
+        print(update_query)
+
+        result = connection.execute(update_query)
+        print(
+            result.rowcount
+        )
+
+        connection.commit()
+
+#3 ELIMINAR REGISTROS
+    with engine.connect() as connection:
+      
+        with open("users.json") as file:
+            connection.execute(users.insert(), json.load(file))
+
+        delete_query = delete(users).where(users.c.id == 1)
+        result = connection.execute(delete_query)
+        print(result.rowcount)
+
+        select_query = select(users.c.id, users.c.name).where(users.c.id == 2)
+
+        result = connection.execute(select_query)
+        user = result.fetchone()
+        if user:
+            print(user.name)
+        else:
+            print("No fue posible obtener al usuario!")
+
+        connection.commit()
+
+LLAVE FORANEA
+orders = Table(
+    "orders",
+    metadata,
+    Column("id", Integer(), primary_key=True)
+)
+
+products = Table(
+    "products",
+    metadata,
+    Column("id", Integer(), primary_key=True),
+    Column("title", String()),
+    Column("price", Float(5, 2)),
+    Column("order_id", ForeignKey("orders.id"))
+)
+
+if __name__ == "__main__":
+    
+    metadata.drop_all(engine)
+    metadata.create_all(engine)
+
+    with engine.connect() as connection:
+
+        #Orden
+        insert_query = orders.insert()
+        connection.execute(insert_query)
+    
+        #Productos
+        insert_query = products.insert().values(
+            title="Iphone",
+            price=500.50,
+            order_id=1
+        )
+        connection.execute(insert_query)
+
+        insert_query = products.insert().values(
+            title="Ipad",
+            price=800.00,
+            order_id=1
+        )
+        connection.execute(insert_query)
+
+        insert_query = products.insert().values(
+            title="Macbook",
+            price=2000.00,
+            order_id=1
+        )
+        connection.execute(insert_query)
+
+        connection.commit()
+
+INNER JOIN
+        connection.execute(insert_query)
+
+        select_query = select(
+            
+                products.c.title,
+                products.c.price
+            
+        ).select_from(
+            orders.join(products)
+        ).where(
+            orders.c.id == 1
+        )
+
+        result = connection.execute(select_query)
+
+        for product in result.fetchall():
+            print(product.title, product.price)
+
+        connection.commit()
+
+
+                

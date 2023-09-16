@@ -1,0 +1,175 @@
+from datetime import datetime
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy  import create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import Session, sessionmaker
+
+
+engine = create_engine("postgresql://postgres:02419224596E@localhost/pythondb")
+Base = declarative_base()
+
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer(), primary_key=True )
+    username = Column(String(50), nullable=False, unique=True)
+    email = Column(String(50), nullable=False, unique=True)
+    created_at = Column(DateTime(), default=datetime.now)
+
+    def __str__(self):
+        return self.username
+
+Session = sessionmaker(engine)
+session = Session()
+
+if __name__ == "__main__":
+    
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
+    
+    user1 = User(username="User1", email="user1@example.com")
+    user2 = User(username="User2", email="user2@example.com")
+    user3 = User(username="User3", email="user3@example.com")
+
+    session.add(user1)
+    session.add(user2)
+    session.add(user3)
+
+    session.commit()
+
+OBTENER REGISTROS
+    # SELECT * FROM users;
+    # users = session.query(User).all()
+
+    # SELECT * FROM users WHERE id >= 2 and username = "User3"
+    users = session.query(User).filter(
+        User.id >= 2
+    ).filter(
+        User.username == "User3"
+    )
+
+    for user in users:
+        print(user)
+
+OBTENER REGISTROS UNICOS
+metodo first
+    user = session.query(User).filter(
+        User.id == 1
+    ).first()
+
+    if user:
+        print(user)
+    else:
+        print("El usuario no existe en la base de datos!")
+
+
+metodo one
+    try:
+        user = session.query(User).filter(
+            User.id == 100
+        ).one()
+
+        print(user)
+
+    except NoResultFound as err:
+        print("El usuario no existe en la base datos!")
+    
+ACTUALIZAR REGISTROS
+    # 1
+    user = session.query(User).filter(User.id == 1).first()
+    user.username = "Nuevo username"
+    user.email = "nuevo@gmail.com"
+    
+    session.add(user)
+    session.commit()
+
+    # 2
+    session.query(User).filter(
+        User.id == 2
+    ).update(
+        {
+            User.username:"Nuevo valor 2",
+            User.email: "nuevo@example2.com"
+        }
+    )
+
+    session.commit()
+
+ELIMINAR REGISTROS
+    session.query(User).filter(
+        User.id == 1
+    ).delete()
+
+    session.commit()
+
+RELACIONES ENTRE OBJETOS
+engine = create_engine("postgresql://postgres:02419224596E@localhost/pythondb")
+Base = declarative_base()
+
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer(), primary_key=True )
+    username = Column(String(50), nullable=False, unique=True)
+    email = Column(String(50), nullable=False, unique=True)
+    created_at = Column(DateTime(), default=datetime.now)
+    courses = relationship("Course", backref="user")
+
+    def __str__(self):
+        return self.username
+    
+class Course(Base):
+    __tablename__ = "courses"
+
+    id = Column(Integer(), primary_key=True)
+    title = Column(String(50), nullable=False)
+    user_id = Column(ForeignKey("users.id"))
+    created_at = Column(DateTime(), default=datetime.now())
+
+    def __str__(self):
+        return self.title
+
+Session = sessionmaker(engine)
+session = Session()
+
+if __name__ == "__main__":
+    
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
+    
+    user1 = User(username="user1", email="user1@example.com")
+    user2 = User(username="user2", email="user2@example.com")
+
+    session.add(user1)
+    session.add(user2)
+
+    session.commit()
+
+    course1 = Course(title="Curso profesional de Base de datos", user_id=user1.id)
+    course2 = Course(title="Curso profesional de Python", user_id=user1.id)
+    course3 = Course(title="Curso profesional de Go", user_id=user1.id)
+
+    session.add(course1)
+    session.add(course2)
+    session.add(course3)
+
+    session.commit()
+
+    #for course in user1.courses:
+     #   print(course)
+
+    print(course1.user.created_at)
+
+INNER JOIN
+    users = session.query(User).join(
+        Course
+    )
+
+LEFT JOIN
+    users = session.query(User).outerjoin(
+        Course
+    ).filter(
+        Course.id == None
+    )
